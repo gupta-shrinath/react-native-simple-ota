@@ -1,5 +1,31 @@
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
+# Notes
+- In this example I have uploaded bundles to apache server and reading the ota updates defined in ota.json like below
+```
+json
+{
+  "android": {
+    "0.0.1": [
+      {
+        "bundle_version": "1",
+        "bundle_url": "http://192.168.0.102:8080/index.android.bundle",
+        "bundle_hash": ""
+      }
+    ]
+  },
+  "ios": {
+    "0.0.1": [
+      {
+        "bundle_version": "1",
+        "bundle_url": "http://192.168.0.102:8080/main.jsbundle",
+        "bundle_hash": ""
+      }
+    ]
+  }
+}
+
+```
 # Getting Started
 
 > **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
