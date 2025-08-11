@@ -1,9 +1,9 @@
 import {
   getBundleVersion,
+  type OtaUpdate,
   type OtaUpdateProvider,
 } from 'react-native-simple-ota';
 import RNFS from 'react-native-fs';
-import type { OtaUpdate } from '../../src/OtaUpdateProvider';
 import { Platform } from 'react-native';
 import { version } from '../package.json';
 

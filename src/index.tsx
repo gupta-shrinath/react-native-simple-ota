@@ -1,5 +1,5 @@
 import ReactNativeSimpleOta from './NativeSimpleOta';
-import { type OtaUpdateProvider } from './OtaUpdateProvider';
+import { type OtaUpdateProvider, type OtaUpdate } from './OtaUpdateProvider';
 
 var _otaUpdateProvider: OtaUpdateProvider | null = null;
 
@@ -31,4 +31,4 @@ export function getBundleVersion(): string | null {
   return ReactNativeSimpleOta.getBundleVersion();
 }
 
-export type { OtaUpdateProvider };
+export type { OtaUpdateProvider, OtaUpdate };
