@@ -1,4 +1,4 @@
-package simpleota.example
+package dev.droid.simpleota.example
 
 import android.app.Application
 import com.facebook.react.PackageList
@@ -19,7 +19,7 @@ class MainApplication : Application(), ReactApplication {
       object : DefaultReactNativeHost(this) {
         override fun getPackages(): List<ReactPackage> =
             PackageList(this).packages.apply {
-              // Packages that cannot be autolinked yet can be added manually here, for example:
+              // Packages that cannot be autolinked yet can be added manually here, for dev.droid.simpleota.example:
               // add(MyReactNativePackage())
             }
 
