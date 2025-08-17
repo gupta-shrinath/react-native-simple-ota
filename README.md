@@ -1,5 +1,11 @@
 # react-native-simple-ota
 
+<p align="left">
+<a href="https://www.npmjs.com/package/react-native-simple-ota">
+<img alt="NPM 0.1.2" src="https://img.shields.io/badge/npm-0.1.2-brightgreen?style=for-the-badge&labelColor=red&logo=npm">
+</a>
+</p>
+
 A lightweight **OTA (Over-The-Air) update solution** for React Native apps. It allows you to update your JavaScript code without going through App Store or Play Store releases.
 
 ---
@@ -22,6 +28,7 @@ A lightweight **OTA (Over-The-Air) update solution** for React Native apps. It a
 - OTA updates are **applied on the next app launch**.
 - **You control** when and how to download OTA updates by implementing a custom `OtaUpdateProvider`. This ensures full flexibility for caching, version control, and download logic.
 - On app launch, the library simply redirects the JS bundle loader to your downloaded OTA file (if available).
+- `react-native-simple-ota` works with React Native Old & New Architecture and Expo Bare Work Flow.
 
 ---
 
