@@ -1,0 +1,30 @@
+{
+  "name": "example-expo",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "bundle:android": "react-native bundle --platform android --dev false --entry-file index.ts --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
+    "bundle:ios": "react-native bundle --platform ios --dev false --entry-file index.ts --bundle-output ios/main.jsbundle"
+  },
+  "dependencies": {
+    "expo": "~53.0.20",
+    "expo-dev-client": "~5.2.4",
+    "expo-status-bar": "~2.2.3",
+    "react": "19.0.0",
+    "react-native": "0.79.5",
+    "react-native-simple-ota": "^0.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@react-native-community/cli": "18.0.0",
+    "@react-native-community/cli-platform-android": "18.0.0",
+    "@react-native-community/cli-platform-ios": "18.0.0",
+    "@types/react": "~19.0.10",
+    "typescript": "~5.8.3"
+  },
+  "private": true
+}
