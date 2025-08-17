@@ -56,7 +56,7 @@ export default class MyOtaUpdateProvider implements OtaUpdateProvider {
 
   async getUpdate(): Promise<BundleInfo | null> {
     try {
-      const response = await fetch('http://192.168.0.102:8080/ota.json');
+      const response = await fetch('http://192.168.0.115:8080/ota.json');
       if (!response.ok) throw new Error('Failed to fetch OTA config');
 
       const updates: OTAConfig = await response.json();
