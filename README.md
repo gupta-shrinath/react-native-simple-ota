@@ -34,6 +34,7 @@ A lightweight **OTA (Over-The-Air) update solution** for React Native apps. It a
 
 ## Recommendations
 - Host your JS Bundles on to CDNs for faster delivery.
+- Host a compressed version of the JavaScript bundle, as these files can be quite large.
 - Validate hash of JS Bundle after download to avoid corruption.
 - Take a look at the [example project](https://github.com/gupta-shrinath/react-native-simple-ota/tree/main/example) for reference.
 
