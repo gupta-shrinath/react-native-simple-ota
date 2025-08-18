@@ -45,6 +45,8 @@
     "ios",
     "android",
     "ota",
+    "self hosted",
+    "custom ota",
     "expo"
   ],
   "repository": {
