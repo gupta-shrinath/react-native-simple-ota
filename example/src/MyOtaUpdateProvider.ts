@@ -6,6 +6,8 @@ import {
 import RNFS from 'react-native-fs';
 import { Platform } from 'react-native';
 import { version } from '../package.json';
+import CryptoJS from 'crypto-js';
+import { unzip } from 'react-native-zip-archive';
 
 export default class MyOtaUpdateProvider implements OtaUpdateProvider {
   isUserApplicableForUpdate(): boolean {
@@ -25,11 +27,11 @@ export default class MyOtaUpdateProvider implements OtaUpdateProvider {
       ) {
         return null;
       }
-      let bundlePath = '';
+      let compressedBundlePath = '';
       if (Platform.OS === 'android') {
-        bundlePath = RNFS.DocumentDirectoryPath + '/index.bundle';
+        compressedBundlePath = RNFS.DocumentDirectoryPath + '/index.bundle.zip';
       } else if (Platform.OS === 'ios') {
-        bundlePath = RNFS.DocumentDirectoryPath + '/main.jsbundle';
+        compressedBundlePath = RNFS.DocumentDirectoryPath + '/main.jsbundle.zip';
       }
       console.log('ReactNativeSimpleOta Download Start');
       const file = RNFS.downloadFile({
@@ -37,15 +39,34 @@ export default class MyOtaUpdateProvider implements OtaUpdateProvider {
         readTimeout: 40000,
         backgroundTimeout: 40000,
         fromUrl: bundleInfo.bundle_url,
-        toFile: bundlePath,
+        toFile: compressedBundlePath,
       });
+      const isFileDownloadSuccess = (await file.promise).statusCode == 200;
       console.log(
         'ReactNativeSimpleOtaExample OTA Download complete',
-        (await file.promise).statusCode
+        isFileDownloadSuccess
       );
+      if (!isFileDownloadSuccess) {
+        return null;
+      }
+      const fileHash = await this.getBundleHash(compressedBundlePath);
+      if (fileHash == null) {
+        console.log('ReactNativeSimpleOtaExample Compute file hash failed');
+        return null;
+      }
+      if (fileHash != bundleInfo.bundle_hash) {
+        console.log('ReactNativeSimpleOtaExample Bundle hash mismatch');
+        return null;
+      }
+      const decompressedBundlePath = await this.getDecompressedBundlePath(compressedBundlePath);
+      if (decompressedBundlePath == null) {
+        console.log('ReactNativeSimpleOtaExample Decompressed bundle failed');
+        return null;
+      }
+      const bundleFileName = bundleInfo.bundle_url.split("/").at(-1)?.replace(".zip", "");
       const update: OtaUpdate = {
         bundleVersion: bundleInfo.bundle_version,
-        bundlePath: bundlePath,
+        bundlePath: decompressedBundlePath + `/${bundleFileName}`,
       };
       return update;
     } catch (e: any) {
@@ -71,6 +92,27 @@ export default class MyOtaUpdateProvider implements OtaUpdateProvider {
       console.error('Error fetching OTA update:', error);
       return null;
     }
+  }
+
+  async getBundleHash(bundlePath: string) {
+    try {
+      const fileData = await RNFS.readFile(bundlePath, 'base64');
+      const hash = CryptoJS.SHA256(CryptoJS.enc.Base64.parse(fileData)).toString();
+      console.log('ReactNativeSimpleOtaExample Hash for ', bundlePath, hash);
+      return hash;
+    } catch (error) {
+      console.log('ReactNativeSimpleOtaExample Failed to get hash of bundlePath: ', bundlePath, error);
+      return null;
+    }
+  }
+
+  async getDecompressedBundlePath(compressedBundlePath: string): Promise<string | null> {
+    try {
+      return await unzip(compressedBundlePath, RNFS.DocumentDirectoryPath);
+    } catch (error) {
+      console.error('ReactNativeSimpleOtaExample Unzip failed:', error);
+    }
+    return null;
   }
 }
 

@@ -3,14 +3,13 @@ This is a new [**React Native**](https://reactnative.dev) project, bootstrapped 
 # Notes
 - In this example I have uploaded bundles to apache server and reading the ota updates defined in ota.json like below
 ```
-json
 {
   "android": {
     "0.0.1": [
       {
         "bundle_version": "1",
-        "bundle_url": "http://192.168.0.102:8080/index.android.bundle",
-        "bundle_hash": ""
+        "bundle_url": "http://192.168.0.115:8080/index.android.bundle.zip",
+        "bundle_hash": "a0b054a91d3e177749f4d5c9d98e5611ccfb658f09e19becb475d93acdd20562"
       }
     ]
   },
@@ -18,13 +17,12 @@ json
     "0.0.1": [
       {
         "bundle_version": "1",
-        "bundle_url": "http://192.168.0.102:8080/main.jsbundle",
-        "bundle_hash": ""
+        "bundle_url": "http://192.168.0.115:8080/main.jsbundle.zip",
+        "bundle_hash": "0d0d902ac8fa0b0442eaab184cef866bbcc428cba526082dcd2a16388c49fc39"
       }
     ]
   }
 }
-
 ```
 # Getting Started
 

@@ -1654,7 +1654,7 @@ PODS:
     - React-logger (= 0.79.2)
     - React-perflogger (= 0.79.2)
     - React-utils (= 0.79.2)
-  - ReactNativeSimpleOta (0.1.1):
+  - ReactNativeSimpleOta (0.1.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1680,7 +1680,15 @@ PODS:
     - Yoga
   - RNFS (2.20.0):
     - React-Core
+  - RNZipArchive (7.0.2):
+    - React-Core
+    - RNZipArchive/Core (= 7.0.2)
+    - SSZipArchive (~> 2.5.5)
+  - RNZipArchive/Core (7.0.2):
+    - React-Core
+    - SSZipArchive (~> 2.5.5)
   - SocketRocket (0.7.1)
+  - SSZipArchive (2.5.5)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1757,11 +1765,13 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeSimpleOta (from `../..`)
   - RNFS (from `../node_modules/react-native-fs`)
+  - RNZipArchive (from `../node_modules/react-native-zip-archive`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   trunk:
     - SocketRocket
+    - SSZipArchive
 
 EXTERNAL SOURCES:
   boost:
@@ -1907,6 +1917,8 @@ EXTERNAL SOURCES:
     :path: "../.."
   RNFS:
     :path: "../node_modules/react-native-fs"
+  RNZipArchive:
+    :path: "../node_modules/react-native-zip-archive"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -1980,11 +1992,13 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 04d5eb15eb46be6720e17a4a7fa92940a776e584
   ReactCodegen: c63eda03ba1d94353fb97b031fc84f75a0d125ba
   ReactCommon: 76d2dc87136d0a667678668b86f0fca0c16fdeb0
-  ReactNativeSimpleOta: f30fa1e1b275611ffa27808c9e8720b661c24141
+  ReactNativeSimpleOta: 240ba670297e78434dbb4e9b66dee085e85141f8
   RNFS: 89de7d7f4c0f6bafa05343c578f61118c8282ed8
+  RNZipArchive: 4304f5100eab004eeb7349adc51997b3a28deb76
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
+  SSZipArchive: c69881e8ac5521f0e622291387add5f60f30f3c4
   Yoga: c758bfb934100bb4bf9cbaccb52557cee35e8bdf
 
-PODFILE CHECKSUM: 5558943418ef891288a3f5c751b8e36cbe472396
+PODFILE CHECKSUM: ea9f7bc9f02f500cc57c8d8e1a8f44b068af3e96
 
 COCOAPODS: 1.15.2
