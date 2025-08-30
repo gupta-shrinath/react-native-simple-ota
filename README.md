@@ -2,7 +2,7 @@
 
 <p align="left">
 <a href="https://www.npmjs.com/package/react-native-simple-ota">
-<img alt="NPM 0.1.2" src="https://img.shields.io/badge/npm-0.1.2-brightgreen?style=for-the-badge&labelColor=red&logo=npm">
+<img alt="NPM 0.1.3" src="https://img.shields.io/badge/npm-0.1.3-brightgreen?style=for-the-badge&labelColor=red&logo=npm">
 </a>
 </p>
 
