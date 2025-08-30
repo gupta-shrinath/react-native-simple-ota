@@ -2,8 +2,12 @@
 
 <p align="left">
 <a href="https://www.npmjs.com/package/react-native-simple-ota">
-<img alt="NPM 0.1.3" src="https://img.shields.io/badge/npm-0.1.3-brightgreen?style=for-the-badge&labelColor=red&logo=npm">
+<img alt="NPM 0.2.1" src="https://img.shields.io/badge/npm-0.2.1-brightgreen?style=for-the-badge&labelColor=red&logo=npm">
 </a>
+<a href="https://github.com/gupta-shrinath/react-native-simple-ota">
+<img alt="Github" src="https://img.shields.io/badge/Github-brightgreen?style=for-the-badge&labelColor=black&logo=github">
+</a>
+
 </p>
 
 A lightweight **OTA (Over-The-Air) update solution** for React Native apps. It allows you to update your JavaScript code without going through App Store or Play Store releases.

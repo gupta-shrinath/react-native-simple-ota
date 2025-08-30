@@ -164,8 +164,5 @@
     "languages": "kotlin-objc",
     "type": "turbo-module",
     "version": "0.52.0"
-  },
-  "dependencies": {
-    "react-native-zip-archive": "^7.0.2"
   }
 }
