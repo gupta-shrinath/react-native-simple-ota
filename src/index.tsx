@@ -31,4 +31,12 @@ export function getBundleVersion(): string | null {
   return ReactNativeSimpleOta.getBundleVersion();
 }
 
+export function getCurrentBundlePath(): string | null {
+  return ReactNativeSimpleOta.getCurrentBundlePath();
+}
+
+export function patch(currentBundlePath: string, newBundlePath: string, patchPath: string): Promise<boolean> {
+  return ReactNativeSimpleOta.patch(currentBundlePath, newBundlePath, patchPath);
+}
+
 export type { OtaUpdateProvider, OtaUpdate };

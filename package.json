@@ -86,16 +86,18 @@
     "react-native-builder-bob": "^0.40.13",
     "release-it": "^17.10.0",
     "turbo": "^1.10.7",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "bsdiff-node": "^2.5.0"
   },
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
   },
   "workspaces": [
-    "example"
+    "example",
+    "example-diff"
   ],
-  "packageManager": "yarn@3.6.1",
+  "packageManager": "yarn@3.6.4",
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [
