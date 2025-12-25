@@ -3640,7 +3640,6 @@ __metadata:
     "@types/jest": ^29.5.13
     "@types/react": ^19.0.0
     "@types/react-test-renderer": ^19.0.0
-    bsdiff-node: ^2.5.0
     crypto-js: ^4.2.0
     eslint: ^8.19.0
     jest: ^29.6.3
@@ -10633,6 +10632,7 @@ __metadata:
     "@release-it/conventional-changelog": ^9.0.2
     "@types/jest": ^29.5.5
     "@types/react": ^19.0.0
+    bsdiff-node: ^2.5.0
     commitlint: ^19.6.1
     del-cli: ^5.1.0
     eslint: ^9.22.0
