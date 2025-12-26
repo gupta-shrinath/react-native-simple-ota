@@ -47,16 +47,19 @@ export default class MyOtaUpdateProvider implements OtaUpdateProvider {
         return null;
       }
       const decompressedBundlePatchPath = await this.getDecompressedBundlePatchPath(compressedBundlePatchPath);
+      console.log("ReactNativeSimpleOtaExample decompressedBundlePatchPath",decompressedBundlePatchPath)
       if (decompressedBundlePatchPath == null) {
         console.log('ReactNativeSimpleOtaExample Decompressed patch failed');
         return null;
       }
       const patchPath = bundleInfo.patch_url.split("/").at(-1)?.replace(".zip", "");
+      console.log("ReactNativeSimpleOtaExample patchPath",patchPath)
       if (patchPath == undefined) {
         console.log('ReactNativeSimpleOtaExample Patch path is undefined');
         return null;
       }
       const currentBundlePath = getCurrentBundlePath();
+      console.log("ReactNativeSimpleOtaExample patchPath",patchPath)
       if (currentBundlePath == null) {
         console.log('ReactNativeSimpleOtaExample Current bundle path is null');
         return null;
@@ -67,6 +70,7 @@ export default class MyOtaUpdateProvider implements OtaUpdateProvider {
       } else if (Platform.OS === 'ios') {
         otaBundlePath = RNFS.DocumentDirectoryPath + '/main.jsbundle';
       }
+      console.log('ReactNativeSimpleOtaExample currentBundlePath hash',await this.getBundleHash(currentBundlePath))
       console.log('ReactNativeSimpleOtaExample Patching Start', currentBundlePath, otaBundlePath, decompressedBundlePatchPath + `/${patchPath}`);
       const isPatchSuccessful = await patch(currentBundlePath, otaBundlePath, decompressedBundlePatchPath + `/${patchPath}`);
       if(!isPatchSuccessful) {
@@ -94,7 +98,7 @@ export default class MyOtaUpdateProvider implements OtaUpdateProvider {
 
   async getUpdate(): Promise<BundleInfo | null> {
     try {
-      const response = await fetch('http://192.168.0.109:5500/example-diff/ota-updates/ota.json');
+      const response = await fetch('http://192.168.1.102:8080/ota.json');
       if (!response.ok) throw new Error('Failed to fetch OTA config');
 
       const updates: OTAConfig = await response.json();
