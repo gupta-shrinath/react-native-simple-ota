@@ -1,4 +1,5 @@
 import Foundation
+import React
 
 @objc(ReactNativeSimpleOta)
 public class ReactNativeSimpleOta: NSObject {
@@ -16,7 +17,7 @@ public class ReactNativeSimpleOta: NSObject {
   
   @objc
   func rollbackToDefaultBundle() {
-    if let resourcePath = Bundle.main.path(forResource: "main", ofType: "jsbundle") {
+    if Bundle.main.path(forResource: "main", ofType: "jsbundle") != nil{
       storage.clearJSBundlePath()
     }
   }
@@ -24,6 +25,36 @@ public class ReactNativeSimpleOta: NSObject {
   @objc
   func getBundleVersion() -> String? {
     return storage.getBundleVersion()
+  }
+  
+  @objc
+  func getCurrentBundlePath() -> String? {
+    return ReactNativeSimpleOta.getJSBundleFile() ?? getDefaultJSBundlePath()
+  }
+  
+  @objc func patch(_ currentBundlePath: String,
+                   newBundlePath: String,
+                   patchPath: String,
+                   resolve: @escaping RCTPromiseResolveBlock,
+                   reject: @escaping RCTPromiseRejectBlock) -> Void {
+      
+      // Call the Objective-C class method using Swift dot notation.
+      // Ensure the argument labels match your BSPatch.h definition.
+      let result = BSPatch.bsdiffPatch(currentBundlePath,
+                                      otaBundlePath: newBundlePath,
+                                      patchPath: patchPath)
+      
+      // Handle the result based on your bsdiff implementation (usually 0 is success)
+      if result == 0 {
+          resolve(true)
+      } else {
+          let error = NSError(domain: "BSPatchError", code: Int(result), userInfo: nil)
+          reject("patch_failed", "Failed to apply patch with code \(result)", error)
+      }
+  }
+
+  func getDefaultJSBundlePath() -> String? {
+    return Bundle.main.path(forResource: "main", ofType: "jsbundle")
   }
   
   public static func getJSBundleFile() -> String? {

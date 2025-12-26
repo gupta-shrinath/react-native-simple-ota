@@ -2,6 +2,7 @@ import UIKit
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
+import ReactNativeSimpleOta
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -39,10 +40,13 @@ class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
   }
 
   override func bundleURL() -> URL? {
-#if DEBUG
-    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
-#else
-    Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-#endif
+  #if DEBUG
+      return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
+  #else
+    if let customBundlePath = ReactNativeSimpleOta.getJSBundleFile() {
+          return URL(fileURLWithPath: customBundlePath)
+    }
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+  #endif
   }
 }
