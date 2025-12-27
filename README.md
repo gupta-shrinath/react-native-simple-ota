@@ -2,7 +2,7 @@
 
 <p align="left">
 <a href="https://www.npmjs.com/package/react-native-simple-ota">
-<img alt="NPM 0.2.1" src="https://img.shields.io/badge/npm-0.2.1-brightgreen?style=for-the-badge&labelColor=red&logo=npm">
+<img alt="NPM 1.0.0" src="https://img.shields.io/badge/npm-1.0.0-brightgreen?style=for-the-badge&labelColor=red&logo=npm">
 </a>
 <a href="https://github.com/gupta-shrinath/react-native-simple-ota">
 <img alt="Github" src="https://img.shields.io/badge/Github-brightgreen?style=for-the-badge&labelColor=black&logo=github">
@@ -18,8 +18,10 @@ A lightweight **OTA (Over-The-Air) update solution** for React Native apps. It a
 
 - **OTA (Over-The-Air) Updates**: Updates pushed remotely to the app **without requiring a new version** from the App Store / Play Store.
 - **JS Bundle**: The compiled version of your React Native JavaScript code. It can generated using the following commands.
-  - **Android**: `react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res` 
-  - **iOS**: `react-native bundle --platform ios --dev false --entry-file index.js --bundle-output ios/main.jsbundle`
+>**JSC**
+>  - **Android**: `react-native bundle --platform android --dev false --entry-file index.js >--bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/>main/res` 
+>  - **iOS**: `react-native bundle --platform ios --dev false --entry-file index.js >--bundle-output ios/main.jsbundle`
+  
 - ⚠️ **Note**:  
   - `react-native-simple-ota` only updates **JavaScript code**, not native modules.  
   - Works only in **release builds**; in debug mode, Metro bundler is used instead.
