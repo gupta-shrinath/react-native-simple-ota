@@ -72,8 +72,9 @@ export default class MyOtaUpdateProvider implements OtaUpdateProvider {
       }
       console.log('ReactNativeSimpleOtaExample currentBundlePath hash',await this.getBundleHash(currentBundlePath))
       console.log('ReactNativeSimpleOtaExample Patching Start', currentBundlePath, otaBundlePath, decompressedBundlePatchPath + `/${patchPath}`);
-      const isPatchSuccessful = await patch(currentBundlePath, otaBundlePath, decompressedBundlePatchPath + `/${patchPath}`);
-      if(!isPatchSuccessful) {
+      const patchResult = await patch(currentBundlePath, otaBundlePath, decompressedBundlePatchPath + `/${patchPath}`);
+      console.log('ReactNativeSimpleOtaExample patchResult',JSON.stringify(patchResult))
+      if(!patchResult.isSuccess) {
         return null;
       }
       const fileHash = await this.getBundleHash(otaBundlePath);

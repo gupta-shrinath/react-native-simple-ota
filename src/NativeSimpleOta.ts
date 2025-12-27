@@ -10,7 +10,7 @@ export interface Spec extends TurboModule {
 
   getCurrentBundlePath(): string | null;
 
-  patch(currentBundlePath: string, newBundlePath: string, patchPath: string): Promise<boolean>;
+  patch(currentBundlePath: string, newBundlePath: string, patchPath: string): Promise<number>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('ReactNativeSimpleOta');

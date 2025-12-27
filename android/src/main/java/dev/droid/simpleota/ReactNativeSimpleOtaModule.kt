@@ -46,7 +46,7 @@ class ReactNativeSimpleOtaModule(reactContext: ReactApplicationContext) :
       return
     }
     val result = BSPatch.patch(currentBundlePath, newBundlePath, patchPath);
-    promise.resolve(result == 0);
+    promise.resolve(result);
   }
 
   override fun rollbackToDefaultBundle() {

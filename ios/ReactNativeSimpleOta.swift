@@ -40,11 +40,7 @@ public class ReactNativeSimpleOta: NSObject {
       let result = BSPatch.patch(currentBundlePath,
                                       otaBundlePath: newBundlePath,
                                       patchPath: patchPath)
-      if result == 0 {
-          resolve(true)
-      } else {
-          resolve(false)
-      }
+      resolve(result)
   }
 
   func getDefaultJSBundlePath() -> String? {
