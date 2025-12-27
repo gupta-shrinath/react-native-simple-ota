@@ -9,7 +9,12 @@
     "start": "react-native start",
     "test": "jest",
     "bundle:android": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
-    "bundle:ios": "react-native bundle --platform ios --dev false --entry-file index.js --bundle-output ios/main.jsbundle"
+    "bundle:ios": "react-native bundle --platform ios --dev false --entry-file index.js --bundle-output ios/main.jsbundle",
+    "reinstall": "yarn clean && yarn install && cd ios && pod install",
+    "clean": "yarn clean:android && yarn clean:ios && yarn clean:js",
+    "clean:js": "rm -rf ../node_modules node_modules",
+    "clean:android": "cd android && rm -rf app/.cxx && chmod u+x ./gradlew && ./gradlew clean && cd ..",
+    "clean:ios": "rm -rf ios/Pods ios/Podfile.lock ios/build $HOME/Library/Developer/Xcode/DerivedData"
   },
   "dependencies": {
     "crypto-js": "^4.2.0",
