@@ -1,4 +1,5 @@
 import Foundation
+import React
 
 @objc(ReactNativeSimpleOta)
 public class ReactNativeSimpleOta: NSObject {
@@ -16,7 +17,7 @@ public class ReactNativeSimpleOta: NSObject {
   
   @objc
   func rollbackToDefaultBundle() {
-    if let resourcePath = Bundle.main.path(forResource: "main", ofType: "jsbundle") {
+    if Bundle.main.path(forResource: "main", ofType: "jsbundle") != nil{
       storage.clearJSBundlePath()
     }
   }
@@ -24,6 +25,26 @@ public class ReactNativeSimpleOta: NSObject {
   @objc
   func getBundleVersion() -> String? {
     return storage.getBundleVersion()
+  }
+  
+  @objc
+  func getCurrentBundlePath() -> String? {
+    return ReactNativeSimpleOta.getJSBundleFile() ?? getDefaultJSBundlePath()
+  }
+  
+  @objc func patch(_ currentBundlePath: String,
+                   newBundlePath: String,
+                   patchPath: String,
+                   resolve: @escaping RCTPromiseResolveBlock,
+                   reject: @escaping RCTPromiseRejectBlock) -> Void {
+      let result = BSPatch.patch(currentBundlePath,
+                                      otaBundlePath: newBundlePath,
+                                      patchPath: patchPath)
+      resolve(result)
+  }
+
+  func getDefaultJSBundlePath() -> String? {
+    return Bundle.main.path(forResource: "main", ofType: "jsbundle")
   }
   
   public static func getJSBundleFile() -> String? {
