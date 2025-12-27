@@ -2,7 +2,7 @@
 
 <p align="left">
 <a href="https://www.npmjs.com/package/react-native-simple-ota">
-<img alt="NPM 1.0.0" src="https://img.shields.io/badge/npm-1.0.0-brightgreen?style=for-the-badge&labelColor=red&logo=npm">
+<img alt="NPM 1.0.2" src="https://img.shields.io/badge/npm-1.0.2-brightgreen?style=for-the-badge&labelColor=red&logo=npm">
 </a>
 <a href="https://github.com/gupta-shrinath/react-native-simple-ota">
 <img alt="Github" src="https://img.shields.io/badge/Github-brightgreen?style=for-the-badge&labelColor=black&logo=github">

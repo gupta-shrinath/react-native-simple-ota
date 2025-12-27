@@ -1,6 +1,6 @@
 {
   "name": "react-native-simple-ota",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A simple ota solution for React Native apps",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
