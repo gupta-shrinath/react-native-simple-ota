@@ -17,10 +17,19 @@ A lightweight **OTA (Over-The-Air) update solution** for React Native apps. It a
 ## 🚀 Concepts
 
 - **OTA (Over-The-Air) Updates**: Updates pushed remotely to the app **without requiring a new version** from the App Store / Play Store.
-- **JS Bundle**: The compiled version of your React Native JavaScript code. It can generated using the following commands.
+- **JS Bundle**: The compiled version of your React Native JavaScript code.
 >**JSC**
+>
+>It can generated using the following commands.
 >  - **Android**: `react-native bundle --platform android --dev false --entry-file index.js >--bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/>main/res` 
 >  - **iOS**: `react-native bundle --platform ios --dev false --entry-file index.js >--bundle-output ios/main.jsbundle`
+>
+>
+>**Hermes**
+>
+>It can be retrieved from the following places after successful build/archieve.
+>  - **Android**: `android/build/generated/assets/createBundleReleaseJSAndAssets/index.android.bundle` 
+>  - **iOS**: `YourApp.xcarchieve/Products/Applications/YourApp.app/main.jsbundle`
   
 - ⚠️ **Note**:  
   - `react-native-simple-ota` only updates **JavaScript code**, not native modules.  
@@ -39,10 +48,11 @@ A lightweight **OTA (Over-The-Air) update solution** for React Native apps. It a
 ---
 
 ## Recommendations
-- Host your JS Bundles on to CDNs for faster delivery.
-- Host a compressed version of the JavaScript bundle, as these files can be quite large.
+- Make use of patch against default bundle instead of entire JS bundle.
+- Host your Patch/JS Bundles on to CDNs for faster delivery.
+- Host a compressed version of the Patch/JS Bundles, as these files can be quite large.
 - Validate hash of JS Bundle after download to avoid corruption.
-- Take a look at the [example project](https://github.com/gupta-shrinath/react-native-simple-ota/tree/main/example) for reference.
+- Take a look at the [example project](https://github.com/gupta-shrinath/react-native-simple-ota/tree/main/example-diff) for reference.
 
 ## 📦 Installation
 
