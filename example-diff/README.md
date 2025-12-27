@@ -1,7 +1,8 @@
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Notes
-- In this example I have uploaded bundles to apache server and reading the ota updates defined in ota.json like below
+- You can generate patch using the generate-patch.js and verify it using generate-bundle.js script.
+- I have uploaded patches to apache server and reading the ota updates defined in ota.json like below
 ```
 {
   "android": {
