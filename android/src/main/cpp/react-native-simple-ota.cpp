@@ -5,11 +5,12 @@
 #include <cstdint>
 #include <cstring>
 #include "bzip/bzlib.h"
-#include "bspatch.c"
+#include <string>
+#include <memory>
 
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "bspatch", __VA_ARGS__)
+#define LOG(...) __android_log_print(ANDROID_LOG_ERROR, "ReactNativeSimpleOta", __VA_ARGS__)
 
-// --- Helper: decode int64 from BSDIFF40 ---
+// --- Helper: decode int64 ---
 static int64_t offtin(const uint8_t *buf) {
     int64_t y = buf[7] & 0x7F;
     for (int i = 6; i >= 0; i--) y = y * 256 + buf[i];
@@ -17,179 +18,179 @@ static int64_t offtin(const uint8_t *buf) {
     return y;
 }
 
+struct BZ2FileDeleter {
+    void operator()(BZFILE *f) const {
+        int bzerr;
+        if (f) BZ2_bzReadClose(&bzerr, f);
+    }
+};
+
+struct FileDeleter {
+    void operator()(FILE *f) const {
+        if (f) fclose(f);
+    }
+};
+
 extern "C"
 JNIEXPORT jint JNICALL
-Java_dev_droid_simpleota_bsdiff_BsDiff_patch(JNIEnv *env, jobject /*this*/,
-                                             jstring currentBundlePath_, jstring otaBundlePath_, jstring patchPath_) {
+Java_dev_droid_simpleota_bspatch_BSPatch_patch(JNIEnv *env, jobject /*this*/,
+                                             jstring currentBundlePath_, jstring otaBundlePath_,
+                                             jstring patchPath_) {
+
     const char *currentBundlePath = env->GetStringUTFChars(currentBundlePath_, nullptr);
     const char *otaBundlePath = env->GetStringUTFChars(otaBundlePath_, nullptr);
     const char *patchPath = env->GetStringUTFChars(patchPath_, nullptr);
 
-    // --- Read old file ---
+    auto releaseResources = [&]() {
+        env->ReleaseStringUTFChars(currentBundlePath_, currentBundlePath);
+        env->ReleaseStringUTFChars(otaBundlePath_, otaBundlePath);
+        env->ReleaseStringUTFChars(patchPath_, patchPath);
+    };
+
+    // 1. Read currentBundlePath file
     std::ifstream oldFile(currentBundlePath, std::ios::binary | std::ios::ate);
     if (!oldFile.is_open()) {
-        LOGE("Failed to open old file: %s", currentBundlePath);
+        releaseResources();
+        LOG("Failed to open currentBundle file: %s", currentBundlePath);
         return -1;
     }
     std::vector<uint8_t> oldBuf(oldFile.tellg());
     oldFile.seekg(0);
-    oldFile.read(reinterpret_cast<char*>(oldBuf.data()), oldBuf.size());
+    oldFile.read(reinterpret_cast<char *>(oldBuf.data()), oldBuf.size());
     oldFile.close();
 
-    // --- Open patch file ---
-    FILE *patchFp = fopen(patchPath, "rb");
+    // 2. Open patch file for header validation
+    std::unique_ptr<FILE, FileDeleter> patchFp(fopen(patchPath, "rb"));
     if (!patchFp) {
-        LOGE("Failed to open patch file: %s", patchPath);
-        return -1;
+        releaseResources();
+        LOG("Failed to open patch file: %s", patchPath);
+        return -2;
     }
 
-    // --- Read header (32 bytes) ---
     uint8_t header[32];
-    if (fread(header, 1, 32, patchFp) < 32) {
-        LOGE("Corrupt patch file: incomplete header");
-        fclose(patchFp);
-        return -1;
+    if (fread(header, 1, 32, patchFp.get()) < 32) {
+        releaseResources();
+        LOG("Corrupt patch file: incomplete header");
+        return -3;
     }
 
-    // --- Validate header ---
     if (memcmp(header, "BSDIFF40", 8) != 0) {
-        LOGE("Invalid patch file: wrong magic header");
-        fclose(patchFp);
-        return -1;
+        releaseResources();
+        LOG("Invalid patch file: wrong magic header");
+        return -4;
     }
 
     int64_t ctrlBlockLen = offtin(header + 8);
     int64_t diffBlockLen = offtin(header + 16);
-    int64_t newSize      = offtin(header + 24);
+    int64_t newSize = offtin(header + 24);
 
     if (ctrlBlockLen < 0 || diffBlockLen < 0 || newSize < 0) {
-        LOGE("Corrupt patch: negative header values");
-        fclose(patchFp);
-        return -1;
+        releaseResources();
+        LOG("Corrupt patch: negative header values");
+        return -5;
     }
 
-    LOGE("BSDIFF40 header parsed successfully:");
-    LOGE("  ctrlBlockLen = %lld", (long long)ctrlBlockLen);
-    LOGE("  diffBlockLen = %lld", (long long)diffBlockLen);
-    LOGE("  newSize      = %lld", (long long)newSize);
-
-    // --- Allocate output buffer ---
+    // 3. Prepare output and streams
     std::vector<uint8_t> newBuf(newSize);
+    std::unique_ptr<FILE, FileDeleter> ctrlFp(fopen(patchPath, "rb"));
+    std::unique_ptr<FILE, FileDeleter> diffFp(fopen(patchPath, "rb"));
+    std::unique_ptr<FILE, FileDeleter> extraFp(fopen(patchPath, "rb"));
 
-    // --- Open three file pointers for bzip2 streams ---
-    FILE *ctrlFp = fopen(patchPath, "rb");
-    FILE *diffFp = fopen(patchPath, "rb");
-    FILE *extraFp = fopen(patchPath, "rb");
     if (!ctrlFp || !diffFp || !extraFp) {
-        LOGE("Failed to reopen patch file for multiple streams");
-        if (ctrlFp) fclose(ctrlFp);
-        if (diffFp) fclose(diffFp);
-        if (extraFp) fclose(extraFp);
-        fclose(patchFp);
-        return -1;
+        LOG("Failed to reopen patch file for multiple streams");
+        releaseResources();
+        return -6;
     }
 
-    // Seek to correct positions for each block
-    fseeko(ctrlFp, 32, SEEK_SET);
-    fseeko(diffFp, 32 + ctrlBlockLen, SEEK_SET);
-    fseeko(extraFp, 32 + ctrlBlockLen + diffBlockLen, SEEK_SET);
+    fseek(ctrlFp.get(), 32, SEEK_SET);
+    fseek(diffFp.get(), 32 + ctrlBlockLen, SEEK_SET);
+    fseek(extraFp.get(), 32 + ctrlBlockLen + diffBlockLen, SEEK_SET);
 
-    // --- Open bzip2 streams ---
-    int bzerrCtrl, bzerrDiff, bzerrExtra;
-    BZFILE *bz2Ctrl = BZ2_bzReadOpen(&bzerrCtrl, ctrlFp, 0, 0, nullptr, 0);
-    BZFILE *bz2Diff = BZ2_bzReadOpen(&bzerrDiff, diffFp, 0, 0, nullptr, 0);
-    BZFILE *bz2Extra = BZ2_bzReadOpen(&bzerrExtra, extraFp, 0, 0, nullptr, 0);
-    if (bzerrCtrl != BZ_OK || bzerrDiff != BZ_OK || bzerrExtra != BZ_OK) {
-        LOGE("Failed to open bzip2 streams");
-        if (bz2Ctrl) BZ2_bzReadClose(&bzerrCtrl, bz2Ctrl);
-        if (bz2Diff) BZ2_bzReadClose(&bzerrDiff, bz2Diff);
-        if (bz2Extra) BZ2_bzReadClose(&bzerrExtra, bz2Extra);
-        fclose(ctrlFp);
-        fclose(diffFp);
-        fclose(extraFp);
-        fclose(patchFp);
-        return -1;
+    int bzerr;
+    std::unique_ptr<BZFILE, BZ2FileDeleter> bz2Ctrl(
+            BZ2_bzReadOpen(&bzerr, ctrlFp.get(), 0, 0, nullptr, 0));
+    std::unique_ptr<BZFILE, BZ2FileDeleter> bz2Diff(
+            BZ2_bzReadOpen(&bzerr, diffFp.get(), 0, 0, nullptr, 0));
+    std::unique_ptr<BZFILE, BZ2FileDeleter> bz2Extra(
+            BZ2_bzReadOpen(&bzerr, extraFp.get(), 0, 0, nullptr, 0));
+
+    if (!bz2Ctrl || !bz2Diff || !bz2Extra || bzerr != BZ_OK) {
+        LOG("Failed to open bzip2 streams");
+        releaseResources();
+        return -7;
     }
 
-    // --- Apply patch algorithm ---
+    LOG("BSDIFF40 header parsed: ctrl=%lld, diff=%lld, newSize=%lld",
+        (long long) ctrlBlockLen, (long long) diffBlockLen, (long long) newSize);
     int64_t oldpos = 0, newpos = 0;
-    int64_t ctrl[3];
-    int bzErr;
     while (newpos < newSize) {
-        // Read control data (3 * 8 bytes)
+        int64_t ctrl[3];
         for (int i = 0; i < 3; i++) {
             uint8_t buf[8];
-            BZ2_bzRead(&bzerrCtrl, bz2Ctrl, buf, 8);
-            if (bzerrCtrl != BZ_OK && bzerrCtrl != BZ_STREAM_END) {
-                LOGE("Error reading control block");
-                goto cleanup;
+            BZ2_bzRead(&bzerr, bz2Ctrl.get(), buf, 8);
+            if (bzerr != BZ_OK && bzerr != BZ_STREAM_END) {
+                LOG("Error reading control block: %d", bzerr);
+                return -8;
             }
             ctrl[i] = offtin(buf);
         }
 
         if (newpos + ctrl[0] > newSize) {
-            LOGE("Corrupt patch: newpos out of range");
-            goto cleanup;
+            LOG("Corrupt patch: newpos out of range");
+            releaseResources();
+            return -9;
         }
 
-        // Read diff block
-        std::vector<uint8_t> diff(ctrl[0]);
-        BZ2_bzRead(&bzerrDiff, bz2Diff, diff.data(), ctrl[0]);
-        if (bzerrDiff != BZ_OK && bzerrDiff != BZ_STREAM_END) {
-            LOGE("Error reading diff block");
-            goto cleanup;
+        BZ2_bzRead(&bzerr, bz2Diff.get(), &newBuf[newpos], ctrl[0]);
+        if (bzerr != BZ_OK && bzerr != BZ_STREAM_END) {
+            LOG("Error reading diff block: %d", bzerr);
+            return -10;
         }
 
+        // ✅ FIXED: Apply diff with bounds check + else case
         for (int i = 0; i < ctrl[0]; i++) {
-            if ((oldpos + i >= 0) && (oldpos + i < (int64_t)oldBuf.size()))
-                newBuf[newpos + i] = diff[i] + oldBuf[oldpos + i];
-            else
-                newBuf[newpos + i] = diff[i];
+            if ((oldpos + i >= 0) && (oldpos + i < (int64_t) oldBuf.size())) {
+                newBuf[newpos + i] += oldBuf[oldpos + i];
+            }
         }
 
         newpos += ctrl[0];
         oldpos += ctrl[0];
 
         if (newpos + ctrl[1] > newSize) {
-            LOGE("Corrupt patch: newpos+ctrl[1] out of range");
-            goto cleanup;
+            LOG("Corrupt patch: newpos+ctrl[1] out of range");
+            releaseResources();
+            return -11;
         }
 
-        // Read extra block
-        BZ2_bzRead(&bzerrExtra, bz2Extra, &newBuf[newpos], ctrl[1]);
-        if (bzerrExtra != BZ_OK && bzerrExtra != BZ_STREAM_END) {
-            LOGE("Error reading extra block");
-            goto cleanup;
+        BZ2_bzRead(&bzerr, bz2Extra.get(), &newBuf[newpos], ctrl[1]);
+        if (bzerr != BZ_OK && bzerr != BZ_STREAM_END) {
+            LOG("Error reading extra block: %d", bzerr);
+            return -12;
         }
-
         newpos += ctrl[1];
         oldpos += ctrl[2];
     }
 
-    // --- Write new file ---
-    {
-        std::ofstream newFile(otaBundlePath, std::ios::binary);
-        if (!newFile.is_open()) {
-            LOGE("Failed to open output file: %s", otaBundlePath);
-            goto cleanup;
-        }
-        newFile.write(reinterpret_cast<char*>(newBuf.data()), newBuf.size());
+    if (newpos != newSize) {
+        LOG("Corrupt patch: did not write expected new size");
+        return -13;
+    }
+    // 5. Write Result
+    std::ofstream outFile(otaBundlePath, std::ios::binary);
+    if (!outFile.is_open()) {
+        releaseResources();
+        LOG("Failed to open output file: %s", otaBundlePath);
+        return -14;
+    }
+    outFile.write(reinterpret_cast<char *>(newBuf.data()), newBuf.size());
+    if (!outFile) {
+        LOG("Failed to write output file");
+        return -15;
     }
 
-    LOGE("Patch applied successfully. New file size = %lld bytes", (long long)newSize);
-
-    cleanup:
-    BZ2_bzReadClose(&bzerrCtrl, bz2Ctrl);
-    BZ2_bzReadClose(&bzerrDiff, bz2Diff);
-    BZ2_bzReadClose(&bzerrExtra, bz2Extra);
-    fclose(ctrlFp);
-    fclose(diffFp);
-    fclose(extraFp);
-    fclose(patchFp);
-
-    env->ReleaseStringUTFChars(currentBundlePath_, currentBundlePath);
-    env->ReleaseStringUTFChars(otaBundlePath_, otaBundlePath);
-    env->ReleaseStringUTFChars(patchPath_, patchPath);
-
+    releaseResources();
+    LOG("✅ Patch applied successfully. New file size %lld bytes", (long long) newSize);
     return 0;
 }
+

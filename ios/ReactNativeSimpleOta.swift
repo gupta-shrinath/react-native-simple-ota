@@ -37,19 +37,13 @@ public class ReactNativeSimpleOta: NSObject {
                    patchPath: String,
                    resolve: @escaping RCTPromiseResolveBlock,
                    reject: @escaping RCTPromiseRejectBlock) -> Void {
-      
-      // Call the Objective-C class method using Swift dot notation.
-      // Ensure the argument labels match your BSPatch.h definition.
-      let result = BSPatch.bsdiffPatch(currentBundlePath,
+      let result = BSPatch.patch(currentBundlePath,
                                       otaBundlePath: newBundlePath,
                                       patchPath: patchPath)
-      
-      // Handle the result based on your bsdiff implementation (usually 0 is success)
       if result == 0 {
           resolve(true)
       } else {
-          let error = NSError(domain: "BSPatchError", code: Int(result), userInfo: nil)
-          reject("patch_failed", "Failed to apply patch with code \(result)", error)
+          resolve(false)
       }
   }
 
