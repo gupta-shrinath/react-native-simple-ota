@@ -8,8 +8,8 @@ This is a new [**React Native**](https://reactnative.dev) project, bootstrapped 
     "0.0.1": [
       {
         "bundle_version": "1",
-        "patch_url": "http://192.168.0.115:8080/v1_patch.zip",
-        "bundle_hash": "a0b054a91d3e177749f4d5c9d98e5611ccfb658f09e19becb475d93acdd20562"
+        "patch_url": "http://192.168.1.102:8080/v1_android.patch.zip",
+        "bundle_hash": "8bd4cf3187520a10d2f93b160205c7a91def77cdea85378a2eb70ad6c8b52103"
       }
     ]
   },
@@ -17,12 +17,13 @@ This is a new [**React Native**](https://reactnative.dev) project, bootstrapped 
     "0.0.1": [
       {
         "bundle_version": "1",
-        "patch_url": "http://192.168.0.115:8080/v1_patch.zip",
-        "bundle_hash": "0d0d902ac8fa0b0442eaab184cef866bbcc428cba526082dcd2a16388c49fc39"
+        "patch_url": "http://192.168.1.102:8080/v1_ios.patch.zip",
+        "bundle_hash": "c3745f707b502dc0a1f76602e657d1b21b00ae63e600fe9276087447097ed980"
       }
     ]
   }
 }
+
 ```
 
 # Getting Started
