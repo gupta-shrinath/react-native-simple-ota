@@ -55,13 +55,21 @@ export function getCurrentBundlePath(): string | null {
   return ReactNativeSimpleOta.getCurrentBundlePath();
 }
 
-export async function patch(currentBundlePath: string, newBundlePath: string, patchPath: string): Promise<PatchResult> {
-  const result = await ReactNativeSimpleOta.patch(currentBundlePath, newBundlePath, patchPath);
+export async function patch(
+  currentBundlePath: string,
+  newBundlePath: string,
+  patchPath: string
+): Promise<PatchResult> {
+  const result = await ReactNativeSimpleOta.patch(
+    currentBundlePath,
+    newBundlePath,
+    patchPath
+  );
   return {
-    isSuccess: result == 0,
+    isSuccess: result === 0,
     code: result,
-    description: patchResultDescriptions[result]
-  }
+    description: patchResultDescriptions[result],
+  };
 }
 
 export type { OtaUpdateProvider, OtaUpdate };

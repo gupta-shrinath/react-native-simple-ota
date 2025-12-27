@@ -1,5 +1,5 @@
 export type PatchResult = {
-    isSuccess: boolean,
-    code: number,
-    description?: string
-}
+  isSuccess: boolean;
+  code: number;
+  description?: string;
+};
